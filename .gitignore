@@ -1,0 +1,10 @@
+target/
+*.iml
+.idea/
+.vscode/
+*.class
+*.jar
+!target/burp-search-*.jar
+.DS_Store
+*.swp
+*.swo
