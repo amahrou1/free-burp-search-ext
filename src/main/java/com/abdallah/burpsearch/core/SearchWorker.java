@@ -22,7 +22,7 @@ public final class SearchWorker extends SwingWorker<Void, SearchResult> {
     private final ResultsTableModel tableModel;
     private final ResultAggregator aggregator;
     private final StatusBar statusBar;
-    private final Runnable onDone;
+    private final SearchDoneCallback onDone;
     private final Matcher matcher;
 
     private int totalItems = 0;
@@ -36,7 +36,7 @@ public final class SearchWorker extends SwingWorker<Void, SearchResult> {
             ResultsTableModel tableModel,
             ResultAggregator aggregator,
             StatusBar statusBar,
-            Runnable onDone,
+            SearchDoneCallback onDone,
             Matcher matcher
     ) {
         this.api = api;
@@ -122,7 +122,9 @@ public final class SearchWorker extends SwingWorker<Void, SearchResult> {
     @Override
     protected void done() {
         long elapsed = System.currentTimeMillis() - startTime;
+        // Refresh all rows so deduped match counts and Source column are current
+        tableModel.refreshAll();
         statusBar.setDone(aggregator.size(), scanned, elapsed);
-        if (onDone != null) onDone.run();
+        if (onDone != null) onDone.onDone(aggregator.size(), scanned, elapsed);
     }
 }

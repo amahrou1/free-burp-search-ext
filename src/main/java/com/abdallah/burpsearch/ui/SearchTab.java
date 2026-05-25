@@ -47,7 +47,6 @@ public final class SearchTab extends JPanel {
         add(mainSplit, BorderLayout.CENTER);
         add(statusBar, BorderLayout.SOUTH);
 
-        // Register proxy response handler for live update (always registered; handler ignores events when inactive)
         liveHandlerRegistration = api.proxy().registerResponseHandler(liveUpdateHandler);
     }
 
@@ -61,7 +60,7 @@ public final class SearchTab extends JPanel {
                 query,
                 tablePanel.getModel(),
                 statusBar,
-                () -> onSearchDone(query)
+                (results, scanned, elapsedMs) -> onSearchDone(query, results, scanned, elapsedMs)
         );
 
         if (error != null) {
@@ -70,7 +69,7 @@ public final class SearchTab extends JPanel {
         }
     }
 
-    private void onSearchDone(SearchQuery query) {
+    private void onSearchDone(SearchQuery query, int results, int scanned, long elapsedMs) {
         controlPanel.setSearching(false);
 
         if (controlPanel.isDynamicUpdateEnabled()) {
@@ -80,7 +79,8 @@ public final class SearchTab extends JPanel {
                     searchEngine.getAggregator(),
                     () -> statusBar.setLiveDropped(liveUpdateHandler.getDroppedCount())
             );
-            statusBar.setReadyLive();
+            // Keep the "Done..." text and append · Live
+            statusBar.setDoneLive(results, scanned, elapsedMs);
         }
     }
 

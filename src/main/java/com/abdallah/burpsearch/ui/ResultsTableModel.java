@@ -42,7 +42,14 @@ public final class ResultsTableModel extends AbstractTableModel {
     public void removeRow(int modelIndex) {
         if (modelIndex >= 0 && modelIndex < rows.size()) {
             rows.remove(modelIndex);
-            fireTableRowsDeleted(modelIndex, modelIndex);
+            // fireTableDataChanged refreshes # column for all rows after the deleted one
+            fireTableDataChanged();
+        }
+    }
+
+    public void refreshAll() {
+        if (!rows.isEmpty()) {
+            fireTableDataChanged();
         }
     }
 

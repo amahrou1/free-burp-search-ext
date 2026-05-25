@@ -19,15 +19,14 @@ public final class SearchEngine {
 
     /**
      * Starts a new search. Cancels any running search first.
-     * Returns null on success, or an error message if the query is invalid.
+     * Returns null on success, or an error message string if the query is invalid.
      */
     public String startSearch(
             SearchQuery query,
             ResultsTableModel tableModel,
             StatusBar statusBar,
-            Runnable onSearchComplete
+            SearchDoneCallback onDone
     ) {
-        // Validate regex before starting worker
         Matcher matcher;
         try {
             matcher = new Matcher(query);
@@ -35,10 +34,8 @@ public final class SearchEngine {
             return e.getMessage();
         }
 
-        // Cancel existing worker
         cancelCurrentSearch();
 
-        // Reset state
         aggregator.clear();
         tableModel.clear();
         cancellation.reset();
@@ -46,12 +43,7 @@ public final class SearchEngine {
         statusBar.setSearching(0, 0, 0);
 
         currentWorker = new SearchWorker(
-                api, query, cancellation, tableModel, aggregator, statusBar,
-                () -> {
-                    onSearchComplete.run();
-                },
-                matcher
-        );
+                api, query, cancellation, tableModel, aggregator, statusBar, onDone, matcher);
         currentWorker.execute();
         return null;
     }
