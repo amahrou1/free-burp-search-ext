@@ -2,6 +2,10 @@
 
 A Burp Suite Community Edition extension that provides a suite-wide search function equivalent to Burp Pro's built-in **Search** feature.
 
+## demo
+
+https://youtu.be/uv6HcbZcrjA
+
 ## Features
 
 - **Searches Proxy history and Site map** for HTTP messages matching your expression
